@@ -1,0 +1,24 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    },
+    {
+      "title": "foo remote edited",
+      "author": "bar",
+      "id": 2
+    },
+    {
+      "title": "remote added",
+      "author": "bar",
+      "id": 4
+    },
+    {
+      "title": "remote added two",
+      "author": "bar",
+      "id": 5
+    }
+  ]
+}

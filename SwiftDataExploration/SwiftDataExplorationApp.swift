@@ -5,14 +5,16 @@
 //  Created by Andrew Althage on 9/29/23.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct SwiftDataExplorationApp: App {
+    @StateObject var networkMonitor = NetworkMonitor()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Post.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -26,6 +28,7 @@ struct SwiftDataExplorationApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(networkMonitor)
         }
         .modelContainer(sharedModelContainer)
     }

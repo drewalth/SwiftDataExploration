@@ -5,24 +5,45 @@
 //  Created by Andrew Althage on 9/29/23.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var items: [Post]
+
+    @EnvironmentObject private var network: NetworkMonitor
+
+    @State private var requestStatus: RequestStatus = .idle
+
+    @ViewBuilder
+    private func content() -> some View {
+        switch requestStatus {
+        case .loading:
+            VStack {
+                ProgressView()
+                Text("Refreshing data")
+            }
+
+        case .error:
+            Text("error")
+
+        default:
+            ForEach(items) { item in
+                NavigationLink {
+                    Text(item.title)
+                } label: {
+                    Text(item.title)
+                }
+            }
+            .onDelete(perform: deleteItems)
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+                content()
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -36,13 +57,37 @@ struct ContentView: View {
             }
         } detail: {
             Text("Select an item")
+        }.task {
+            do {
+                if !network.isConnected { return }
+
+                requestStatus = .loading
+                let postRepo = PostRepository(context: modelContext)
+
+                let posts = try await PostAPI.getPosts()
+
+                postRepo.sync(posts)
+
+                requestStatus = .success
+            } catch {
+                print(error.localizedDescription)
+                requestStatus = .error
+            }
         }
     }
 
     private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+        Task {
+            do {
+                let result = try await PostAPI.createPost(title: "foo", author: "bar")
+
+                withAnimation {
+                    modelContext.insert(result)
+                }
+
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 
@@ -57,5 +102,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Post.self, inMemory: true)
 }

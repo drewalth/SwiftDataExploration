@@ -56,7 +56,7 @@ struct ContentView: View {
 
                 let remotePosts = try await PostService.getPosts()
 
-                postRepository.sync(remotePosts)
+                await postRepository.sync(remotePosts)
 
                 requestStatus = .success
             } catch {

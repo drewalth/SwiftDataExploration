@@ -16,45 +16,35 @@ struct ContentView: View {
 
     @State private var requestStatus: RequestStatus = .idle
 
-    @ViewBuilder
-    private func content() -> some View {
-        switch requestStatus {
-        case .loading:
-            VStack {
-                ProgressView()
-                Text("Refreshing data")
-            }
-
-        case .error:
-            Text("error")
-
-        default:
-            ForEach(items) { item in
-                NavigationLink {
-                    Text(item.title)
-                } label: {
-                    Text(item.title)
-                }
-            }
-            .onDelete(perform: deleteItems)
-        }
-    }
-
     var body: some View {
         NavigationSplitView {
             List {
-                content()
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                ForEach(items) { item in
+                    NavigationLink {
+                        Text(item.title)
+                    } label: {
+                        Text(item.title)
                     }
                 }
-            }
+                .onDelete(perform: deleteItems)
+            }.navigationTitle("Posts")
+                .toolbar {
+                    if requestStatus == .loading {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            ProgressView()
+                        }
+
+                    } else {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            EditButton()
+                        }
+                        ToolbarItem {
+                            Button(action: addItem) {
+                                Label("Add Item", systemImage: "plus")
+                            }
+                        }
+                    }
+                }
         } detail: {
             Text("Select an item")
         }.task {
@@ -62,11 +52,11 @@ struct ContentView: View {
                 if !network.isConnected { return }
 
                 requestStatus = .loading
-                let postRepo = PostRepository(context: modelContext)
+                let postRepository = PostRepository(context: modelContext)
 
-                let posts = try await PostAPI.getPosts()
+                let remotePosts = try await PostService.getPosts()
 
-                postRepo.sync(posts)
+                postRepository.sync(remotePosts)
 
                 requestStatus = .success
             } catch {
@@ -79,7 +69,7 @@ struct ContentView: View {
     private func addItem() {
         Task {
             do {
-                let result = try await PostAPI.createPost(title: "foo", author: "bar")
+                let result = try await PostService.createPost(title: "foo", author: "bar")
 
                 withAnimation {
                     modelContext.insert(result)

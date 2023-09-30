@@ -5,29 +5,29 @@
 //  Created by Andrew Althage on 9/29/23.
 //
 
-import Foundation
 import SwiftData
-import SwiftUI
 
 struct PostRepository {
-    private let repo: ModelRepository<Post>
+    private let repository: ModelRepository<Post>
 
     init(context: ModelContext) {
-        repo = ModelRepository(context: context)
+        repository = ModelRepository(context: context)
     }
 
-    func sync(_ remoteModels: [Post]) {
+    func sync(_ remotePosts: [Post]) {
         do {
-            var localPosts = try repo.getAll()
+            // load local posts
+            var localPosts = try repository.getAll()
 
-            let postsToDelete = checkPostsForDeletion(localPosts: localPosts, remotePosts: remoteModels)
+            // first delete stale posts
+            let postsToDelete = checkPostsForDeletion(localPosts: localPosts, remotePosts: remotePosts)
+            repository.deleteEntities(postsToDelete)
 
-            repo.deleteEntities(postsToDelete)
-            updateLocalPosts(with: remoteModels, in: &localPosts)
-            repo.create(remoteModels)
+            updateLocalPosts(with: remotePosts, in: &localPosts)
 
-            try repo.save()
+            repository.create(remotePosts)
 
+            try repository.save()
         } catch {
             print(error.localizedDescription)
         }

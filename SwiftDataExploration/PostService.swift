@@ -1,5 +1,5 @@
 //
-//  PostAPI.swift
+//  PostService.swift
 //  SwiftDataExploration
 //
 //  Created by Andrew Althage on 9/29/23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PostAPI {
+struct PostService {
     static func createPost(title: String, author: String) async throws -> Post {
         let url = URL(string: "http://localhost:3000/posts")!
         var request = URLRequest(url: url)
@@ -30,13 +30,10 @@ struct PostAPI {
 
     static func getPosts() async throws -> [Post] {
         // simulate long loading
-
         try await Task.sleep(nanoseconds: 3_000_000_000)
 
-        // Assuming the API endpoint
         let url = URL(string: "http://localhost:3000/posts")!
 
-        // Create the URLSession
         let session = URLSession.shared
 
         // Make the network request

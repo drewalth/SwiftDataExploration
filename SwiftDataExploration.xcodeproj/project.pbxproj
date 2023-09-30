@@ -14,7 +14,7 @@
 		A1BA34812AC7757A00B1E9D9 /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = A1BA34802AC7757A00B1E9D9 /* package.json */; };
 		A1BA34832AC775C000B1E9D9 /* db.json in Resources */ = {isa = PBXBuildFile; fileRef = A1BA34822AC775C000B1E9D9 /* db.json */; };
 		A1BA34852AC7762500B1E9D9 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34842AC7762500B1E9D9 /* PostModel.swift */; };
-		A1BA34872AC777E700B1E9D9 /* PostAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34862AC777E700B1E9D9 /* PostAPI.swift */; };
+		A1BA34872AC777E700B1E9D9 /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34862AC777E700B1E9D9 /* PostService.swift */; };
 		A1BA34892AC7789400B1E9D9 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34882AC7789400B1E9D9 /* Makefile */; };
 		A1BA348B2AC77FBA00B1E9D9 /* ModelRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA348A2AC77FBA00B1E9D9 /* ModelRepository.swift */; };
 		A1BA348D2AC781A700B1E9D9 /* PostRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA348C2AC781A700B1E9D9 /* PostRepository.swift */; };
@@ -31,7 +31,7 @@
 		A1BA34802AC7757A00B1E9D9 /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = SOURCE_ROOT; };
 		A1BA34822AC775C000B1E9D9 /* db.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = db.json; sourceTree = "<group>"; };
 		A1BA34842AC7762500B1E9D9 /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
-		A1BA34862AC777E700B1E9D9 /* PostAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostAPI.swift; sourceTree = "<group>"; };
+		A1BA34862AC777E700B1E9D9 /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		A1BA34882AC7789400B1E9D9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A1BA348A2AC77FBA00B1E9D9 /* ModelRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRepository.swift; sourceTree = "<group>"; };
 		A1BA348C2AC781A700B1E9D9 /* PostRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRepository.swift; sourceTree = "<group>"; };
@@ -77,7 +77,7 @@
 				A1BA34762AC7753900B1E9D9 /* Assets.xcassets */,
 				A1BA34782AC7753900B1E9D9 /* Preview Content */,
 				A1BA34842AC7762500B1E9D9 /* PostModel.swift */,
-				A1BA34862AC777E700B1E9D9 /* PostAPI.swift */,
+				A1BA34862AC777E700B1E9D9 /* PostService.swift */,
 				A1BA348A2AC77FBA00B1E9D9 /* ModelRepository.swift */,
 				A1BA348C2AC781A700B1E9D9 /* PostRepository.swift */,
 				A1BA348E2AC7891800B1E9D9 /* Types.swift */,
@@ -174,7 +174,7 @@
 				A1BA348F2AC7891800B1E9D9 /* Types.swift in Sources */,
 				A1BA34912AC78CA700B1E9D9 /* NetworkMonitor.swift in Sources */,
 				A1BA34712AC7753700B1E9D9 /* SwiftDataExplorationApp.swift in Sources */,
-				A1BA34872AC777E700B1E9D9 /* PostAPI.swift in Sources */,
+				A1BA34872AC777E700B1E9D9 /* PostService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

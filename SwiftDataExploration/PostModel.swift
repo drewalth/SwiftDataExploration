@@ -14,8 +14,6 @@ class Post: Codable, Equatable {
     var id: Int
     var title: String
     var author: String
-    /// post is waiting to be synced. Local only value.
-    var pending: Bool?
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

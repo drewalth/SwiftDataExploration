@@ -19,18 +19,11 @@ struct PostRepository {
             // load local posts
             var localPosts = try repository.getAll()
 
-            await syncPendingPosts(localPosts)
-
-            try repository.save()
-
             // first delete stale posts
             let postsToDelete = checkPostsForDeletion(localPosts: localPosts, remotePosts: remotePosts)
             repository.deleteEntities(postsToDelete)
-
             updateLocalPosts(with: remotePosts, in: &localPosts)
-
             repository.create(remotePosts)
-
             try repository.save()
         } catch {
             print(error.localizedDescription)
@@ -43,24 +36,6 @@ struct PostRepository {
                localPost != matchingRemotePost
             {
                 localPosts[index] = matchingRemotePost
-            }
-        }
-    }
-
-    func syncPendingPosts(_ posts: [Post]) async {
-        await withTaskGroup(of: Post?.self) { group in
-            for post in posts where post.pending == true {
-                group.addTask {
-                    try? await PostService.createPost(title: post.title, author: post.author)
-                }
-            }
-
-            for await result in group {
-                if let post = result {
-                    repository.deleteEntities([post])
-                } else {
-                    print("Failed to upload post.")
-                }
             }
         }
     }

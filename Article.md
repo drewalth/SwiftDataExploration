@@ -90,7 +90,9 @@ If you want to skip all of this, I've put together a sample application with the
 - Fetch remote data
 - Persist remote data
 - Sync local data with remote data source
-- Create new local data and sync with remote data source
+
+It's important to note that for the scope of this POC, we are not going to build functionality to support 
+creating local posts and syncing them with remote server. The remote server is the source of truth!
 
 ### Project Setup
 
@@ -200,7 +202,9 @@ Fix the compiler errors which will pop up in the `ForEach` and do the same in fo
 }
 ```
 
-Great. Now we have our local data model setup. Next, we need to fetch our remote data.
+Let's also remove the boilerplace `addItem` and `deleteItems` functions and the `.onDelete` and `.toolbar` modifiers.
+
+Great. Now we have our local data model setup and UI coomponents for the scope of the POC. Next, we need to fetch our remote data.
 
 ### Fetch Remote Data
 
@@ -480,8 +484,201 @@ Updated." Then run the app and you should see the new title in the UI.
 
 So cool.
 
+### Delete Local Data
+
+We want to make sure that if a post is no longer returned from the server then it is considered stale and should be removed from the 
+local data store.
+
+In `ModelReposity.swift` add the following `deleteEntities` method:
+
+```swift
+func deleteEntities(_ models: [Model]) {
+    for model in models {
+        context.delete(model)
+    }
+}
+```
+
+And now in `PostReposity.swift` lets make use of it. Add the following method:
+
+```swift
+private func checkPostsForDeletion(localPosts: [Post], remotePosts: [Post]) -> [Post] {
+    var postsToDelete: [Post] = []
+
+    let remotePostIds = Set(remotePosts.map { $0.id })
+
+    for localPost in localPosts {
+        if !remotePostIds.contains(localPost.id) {
+            postsToDelete.append(localPost)
+        }
+    }
+
+    return postsToDelete
+}
+```
+
+and call it in the `sync` method before `updateLocalPosts` and create. The `sync` func should look like this:
+
+```swift
+// load local posts
+var localPosts = try repository.getAll()
+
+// first delete stale posts
+let postsToDelete = checkPostsForDeletion(localPosts: localPosts, remotePosts: remotePosts)
+repository.deleteEntities(postsToDelete)
+updateLocalPosts(with: remotePosts, in: &localPosts)
+repository.create(remotePosts)
+try repository.save()
+```
+
+### User Experience
+
+Now lets make a few more edits to improve the UX. Again, just to reiterate, this is a prototype, and far from perfect.
+
+First lets make an enum called `RequestStatus` to help us communicate to the end user what is happening under the hood.
+
+```swift
+// Types.swift
+enum RequestStatus {
+    case idle, loading, success, error
+}
+```
+
+Now back in `ContentView.swift` lets add a `@State` property to keep track of the request status and update the `.task`
+
+```swift
+@State private var requestStatus: RequestStatus = .idle
+```
+
+and the `.task` modifier:
+
+```swift
+.task {
+    do {
+        requestStatus = .loading
+        
+        let postRepository = PostRepository(context: modelContext)
+        let remotePosts = try await PostService.getPosts()
+        await postRepository.sync(remotePosts)
+
+        requestStatus = .success
+    } catch {
+        print(error.localizedDescription)
+        requestStatus = .error
+    }
+}
+```
+
+Now lets add views to the `List` that will display the request status:
+
+```swift
+List {
+    switch requestStatus {
+    case .loading:
+        ProgressView()
+    case .error:
+        Text("error")
+    default:
+        ForEach(items) { item in
+            NavigationLink {
+                Text(item.title)
+            } label: {
+                Text(item.title)
+            }
+        }
+    }
+}
+```
+
+To simulate long running requests, we can add a delay to the `PostService`'s `getPosts` method:
+
+```swift
+try await Task.sleep(nanoseconds: 3_000_000_000)
+```
+
+Now run the app and you should see the progress view for 3 seconds before the posts are displayed.
+
 ### Offline Support
 
-Now that we have our local data store syncing with our remote data source, let's add some offline support. We want to
-allow people the ability to create new posts while offline and then sync them when they come back online.
+Now that we have our local data store syncing with our remote data source, let's add some offline support. We want to fetch posts
+if the device is connected to the internet, otherwise we want to display the posts from the local data store.
 
+Lets create a new file called `NetworkMonitor.swift` and add the following:
+
+```swift
+import Network
+import SwiftUI
+
+class NetworkMonitor: ObservableObject {
+    private var monitor: NWPathMonitor
+    private var queue: DispatchQueue
+
+    @Published var isConnected: Bool = true
+
+    init() {
+        monitor = NWPathMonitor()
+        queue = DispatchQueue(label: "NetworkMonitor")
+
+        monitor.pathUpdateHandler = { [weak self] path in
+            if path.status == .satisfied {
+                DispatchQueue.main.async {
+                    self?.isConnected = true
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self?.isConnected = false
+                }
+            }
+        }
+
+        monitor.start(queue: queue)
+    }
+}
+```
+
+Now lets add a `@StateObject` property to the app entry `SwiftDataExplorationApp`:
+
+```swift
+@StateObject var networkMonitor = NetworkMonitor()
+```
+
+then lets inject it into the environment:
+
+```swift
+ContentView()
+    .environmentObject(networkMonitor)
+```
+
+Now back in the `ContentView.swift` file, lets add a `@EnvironmentObject` property to the `ContentView` and add a check to the `.task` modifier:
+
+```swift
+@EnvironmentObject private var network: NetworkMonitor
+
+// and
+
+.task {
+     do {
+        guard network.isConnected else { return }
+
+        requestStatus = .loading
+
+        let postRepository = PostRepository(context: modelContext)
+
+        let remotePosts = try await PostService.getPosts()
+        await postRepository.sync(remotePosts)
+
+        requestStatus = .success
+    } catch {
+        print(error.localizedDescription)
+        requestStatus = .error
+    }
+}
+```
+
+Now to test this is working, disconnect from the internet and run the app. The locally stored posts should display immediately.
+
+Well that's all folks! We now have a simple offline-first app. Add, edit, and remove items from `db.json` to check out all the neat stuff we made. 
+
+Again, this is far from perfect but it does serve as an okay starting point.
+
+Cheers!

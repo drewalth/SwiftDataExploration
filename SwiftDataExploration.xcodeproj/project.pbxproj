@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1AEA81A2ACCB46D00C2FDE4 /* Article.md in Resources */ = {isa = PBXBuildFile; fileRef = A1AEA8192ACCB46C00C2FDE4 /* Article.md */; };
 		A1BA34712AC7753700B1E9D9 /* SwiftDataExplorationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34702AC7753700B1E9D9 /* SwiftDataExplorationApp.swift */; };
 		A1BA34732AC7753700B1E9D9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BA34722AC7753700B1E9D9 /* ContentView.swift */; };
 		A1BA34772AC7753900B1E9D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1BA34762AC7753900B1E9D9 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A1AEA8192ACCB46C00C2FDE4 /* Article.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = Article.md; sourceTree = "<group>"; };
 		A1BA346D2AC7753700B1E9D9 /* SwiftDataExploration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftDataExploration.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1BA34702AC7753700B1E9D9 /* SwiftDataExplorationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataExplorationApp.swift; sourceTree = "<group>"; };
 		A1BA34722AC7753700B1E9D9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 		A1BA34642AC7753700B1E9D9 = {
 			isa = PBXGroup;
 			children = (
+				A1AEA8192ACCB46C00C2FDE4 /* Article.md */,
 				A1BA34882AC7789400B1E9D9 /* Makefile */,
 				A1BA34802AC7757A00B1E9D9 /* package.json */,
 				A1BA34822AC775C000B1E9D9 /* db.json */,
@@ -156,6 +159,7 @@
 				A1BA34832AC775C000B1E9D9 /* db.json in Resources */,
 				A1BA34772AC7753900B1E9D9 /* Assets.xcassets in Resources */,
 				A1BA34812AC7757A00B1E9D9 /* package.json in Resources */,
+				A1AEA81A2ACCB46D00C2FDE4 /* Article.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
